@@ -5,7 +5,7 @@ import {
   HumanChatMessage,
   StoredMessage,
   SystemChatMessage,
-} from "../util/dept.ts";
+} from "../util/deps.ts";
 
 import { env } from "../util/env.ts";
 

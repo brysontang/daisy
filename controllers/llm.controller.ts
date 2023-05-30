@@ -3,7 +3,7 @@ import { Socket } from "https://deno.land/x/socket_io@0.2.0/mod.ts";
 import { initializeModel } from "../models/llm.model.ts";
 
 import { handleToken } from "../services/llm.service.ts";
-import { AIChatMessage, HumanChatMessage } from "../util/dept.ts";
+import { AIChatMessage, HumanChatMessage } from "../util/deps.ts";
 import { getChatHistory, storeMessage } from "./redis.controller.ts";
 
 /**

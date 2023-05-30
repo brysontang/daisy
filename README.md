@@ -19,3 +19,5 @@ Then in terminal run:
 
 Then you can use Socket IO to interact with the chat bot [here](https://blog.postman.com/postman-now-supports-socket-io/) is a blog post
 on how to use postman to interact with Socket IO server.
+
+The SocketIO server has a listener on 'message' and emits on 'response'.

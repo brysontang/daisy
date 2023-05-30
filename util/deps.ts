@@ -9,3 +9,6 @@ export {
   SystemChatMessage,
 } from "npm:langchain/schema";
 export type { StoredMessage } from "npm:langchain/schema";
+
+export { Server } from "https://deno.land/x/socket_io@0.2.0/mod.ts";
+export { serve } from "https://deno.land/std@0.166.0/http/server.ts";

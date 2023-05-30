@@ -1,6 +1,6 @@
 import { typeFromObject } from "../models/llm.model.ts";
 import { redis } from "../models/redis.model.ts";
-import { StoredMessage } from "../util/dept.ts";
+import { StoredMessage } from "../util/deps.ts";
 
 /**
  * Takes a StoredMessage object, turns it into a string, and stores it in Redis.

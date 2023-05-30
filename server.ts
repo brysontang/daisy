@@ -1,6 +1,4 @@
-import { Server } from "https://deno.land/x/socket_io@0.2.0/mod.ts";
-import { serve } from "https://deno.land/std@0.166.0/http/server.ts";
-
+import { serve, Server } from "./util/deps.ts";
 import { humanMessage } from "./controllers/llm.controller.ts";
 
 // Create a new Socket.IO server
