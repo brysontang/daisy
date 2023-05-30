@@ -20,7 +20,7 @@ const isPunctuation = (token: string): boolean => {
  * @param token - The next token to be added to the response.
  * @returns The updated response after the token has been added.
  */
-export const handleToken = (partialResponse: string, token: string) => {
+export const handleToken = (partialResponse: string, token: string): string => {
   let text = partialResponse;
 
   if (token === "\n") { // Don't want space before new line

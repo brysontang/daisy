@@ -16,7 +16,10 @@ import { getChatHistory, storeMessage } from "./redis.controller.ts";
  * @param socket - The socket object that the message came from.
  * @param message - The message from the user to be added to the history.
  */
-export const humanMessage = async (socket: Socket, message: string) => {
+export const humanMessage = async (
+  socket: Socket,
+  message: string,
+): Promise<void> => {
   // Variable to store the response
   let response = "";
 

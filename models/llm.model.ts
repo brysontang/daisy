@@ -15,7 +15,7 @@ import { env } from "../util/env.ts";
  * @param modelName - Name of the OpenAI chat model to use.
  * @returns A ChatOpenAI model instance.
  */
-export const initializeModel = (modelName: string) => {
+export const initializeModel = (modelName: string): ChatOpenAI => {
   const temperature = 0.5,
     maxTokens = 500;
 
