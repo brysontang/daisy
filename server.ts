@@ -1,8 +1,8 @@
-import { serve, Server } from "./util/deps.ts";
+import { httpServe, SocketIoServer } from "./util/deps.ts";
 import { humanMessage } from "./controllers/llm.controller.ts";
 
 // Create a new Socket.IO server
-const io = new Server();
+const io = new SocketIoServer();
 
 io.on("connection", (socket) => {
   console.log(`socket ${socket.id} connected`);
@@ -17,6 +17,6 @@ io.on("connection", (socket) => {
   });
 });
 
-await serve(io.handler(), {
+await httpServe(io.handler(), {
   port: 3000,
 });

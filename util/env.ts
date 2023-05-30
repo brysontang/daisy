@@ -2,6 +2,6 @@
 // lines of code to load the .env file where I needed it so I made this
 // util file.
 
-import { load } from "https://deno.land/std/dotenv/mod.ts";
+import { dotenvLoad } from "../util/deps.ts";
 
-export const env = await load();
+export const env = await dotenvLoad();
