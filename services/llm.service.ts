@@ -5,8 +5,23 @@
  * @returns Whether the token is punctuation or not.
  */
 
-const isPunctuation = (token: string): boolean => {
+export const isPunctuation = (token: string): boolean => {
   return token === "." || token === "!" || token === "?" || token === ",";
+};
+
+/**
+ * Checks if number is less than 3 digits.
+ *
+ * @param token - Token from model.
+ * @returns Whether the number is less than 3 digits or not.
+ */
+export const isPositiveIntLessThan1000 = (token: string): boolean => {
+  if (token === "" || token === " " || token === "\n") return false;
+  try {
+    return Number(token) < 1000 && Number(token) >= 0;
+  } catch (e) {
+    return false;
+  }
 };
 
 /**
@@ -22,10 +37,22 @@ const isPunctuation = (token: string): boolean => {
  */
 export const handleToken = (partialResponse: string, token: string): string => {
   let text = partialResponse;
+  const lastChar = text[text.length - 1];
 
   if (token === "\n") { // Don't want space before new line
     text += "\n";
-  } else if (isPunctuation(token)) { // Don't want space before punctuation
+  } else if (_internals.isPunctuation(token)) { // Don't want space before punctuation
+    text += token;
+  } else if (
+    _internals.isPositiveIntLessThan1000(token) &&
+    (_internals.isPositiveIntLessThan1000(lastChar) || lastChar === ",")
+  ) {
+    // Each token is three numbers, so the number 999999 would be
+    // represented as "999 999". This checks if the last token
+    // was a number and if the current token is a number, and if
+    // so, it doesn't add a space. Also checks if the last token
+    // was a comma, because then it could be expressing a large
+    // number.
     text += token;
   } else if (token === "") { // End character, end of reponse
     return text;
@@ -37,3 +64,6 @@ export const handleToken = (partialResponse: string, token: string): string => {
 
   return text;
 };
+
+// Used to mock functions in tests
+export const _internals = { isPunctuation, isPositiveIntLessThan1000 };
