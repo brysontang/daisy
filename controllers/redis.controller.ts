@@ -1,5 +1,6 @@
 import { typeFromObject } from "../models/llm.model.ts";
 import { redis } from "../models/redis.model.ts";
+import { Petal } from "../types/petal.ts";
 import { BaseChatMessage, StoredMessage } from "../util/deps.ts";
 
 /**
@@ -12,7 +13,7 @@ export const storeMessage = async (
   roomId: string,
   message: StoredMessage,
 ): Promise<void> => {
-  await redis.rpush(roomId, JSON.stringify(message));
+  await redis.rpush(roomId + ":chat_history", JSON.stringify(message));
 };
 
 /**
@@ -29,7 +30,7 @@ export const getChatHistory = async (
   roomId: string,
 ): Promise<BaseChatMessage[]> => {
   // Get the chat history from Redis
-  const history = await redis.lrange(roomId, 0, -1);
+  const history = await redis.lrange(roomId + ":chat_history", 0, -1);
 
   // Loop through each message and turn it into a BaseChatMessage type
   const out = [];
@@ -39,4 +40,22 @@ export const getChatHistory = async (
   }
 
   return out;
+};
+
+/**
+ * Returns what petal is currently attached to the room.
+ *
+ * The petal can be thought of as a program or a mindset
+ * that the AI is in. It is a way to change the AI's
+ * function for the user.
+ *
+ * @param roomId: The ID of the room to get the petal from.
+ * @returns The petal object.
+ */
+export const getPetal = async (roomId: string): Promise<Petal> => {
+  const petal = await redis.get(roomId + ":petal");
+  if (petal === null) {
+    throw new Error("Petal not found");
+  }
+  return JSON.parse(petal);
 };

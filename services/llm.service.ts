@@ -19,7 +19,7 @@ export const isPositiveIntLessThan1000 = (token: string): boolean => {
   if (token === "" || token === " " || token === "\n") return false;
   try {
     return Number(token) < 1000 && Number(token) >= 0;
-  } catch (e) {
+  } catch (_e) {
     return false;
   }
 };

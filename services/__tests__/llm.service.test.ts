@@ -1,13 +1,9 @@
 import {
   assertSpyCall,
-  assertSpyCalls,
   returnsNext,
   stub,
 } from "https://deno.land/std@0.190.0/testing/mock.ts";
-import {
-  assert,
-  assertEquals,
-} from "https://deno.land/std@0.190.0/testing/asserts.ts";
+import { assertEquals } from "https://deno.land/std@0.190.0/testing/asserts.ts";
 import {
   _internals,
   handleToken,

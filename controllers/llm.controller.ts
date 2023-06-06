@@ -4,7 +4,7 @@ import { initializeModel } from "../models/llm.model.ts";
 
 import { handleToken } from "../services/llm.service.ts";
 import { AIChatMessage, HumanChatMessage } from "../util/deps.ts";
-import { getChatHistory, storeMessage } from "./redis.controller.ts";
+import { getChatHistory, getPetal, storeMessage } from "./redis.controller.ts";
 
 /**
  * Produces stream of AI generated tokens based on the chat history.
@@ -22,6 +22,8 @@ export const humanMessage = async (
 ): Promise<void> => {
   // Variable to store the response
   let response = "";
+
+  // Check message to see if program should be booted.
 
   // Create the history input for the model
   const history = await getChatHistory(socket.id);
