@@ -1,0 +1,14 @@
+version: '3'
+services:
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
+  deno:
+    image: denoland/deno:1.34.0
+    volumes:
+      - ./:/app
+    working_dir: /app
+    command: "deno run --allow-net --allow-read --allow-env server.ts"
+    ports:
+      - "3000:3000"

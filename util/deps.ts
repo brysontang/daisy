@@ -2,6 +2,7 @@
 // https://deno.com/manual/examples/manage_dependencies
 
 export { ChatOpenAI } from "npm:langchain@0.0.86/chat_models/openai";
+export { PromptTemplate } from "npm:langchain@0.0.86/prompts";
 export {
   AIChatMessage,
   BaseChatMessage,

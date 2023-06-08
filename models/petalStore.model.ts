@@ -1,6 +1,7 @@
 import { Petal, PetalFactory } from "../types/petal.ts";
 
 export class PetalStore {
+  // This maps the hash of the petal to the petal object
   static petals: Map<string, Petal> = new Map();
 
   /**
@@ -48,5 +49,10 @@ export class PetalStore {
    */
   static getPetal(hash: string) {
     return PetalStore.petals.get(hash);
+  }
+
+  static getPetals() {
+    // Return an array of the petal objects
+    return Array.from(PetalStore.petals.values());
   }
 }

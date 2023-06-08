@@ -3,7 +3,8 @@ import { env } from "../util/env.ts";
 
 let connectionOptions;
 
-console.log(env["REDIS_PASSWORD"]);
+console.log("Connecting to redis");
+console.log(env["REDIS_HOST"], ":", env["REDIS_PORT"]);
 
 if (!env["REDIS_PASSWORD"]) {
   connectionOptions = {
