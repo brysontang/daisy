@@ -20,17 +20,18 @@ petals have yet to be implemented or even architeched, waiting for my next fey m
 
 ## Installation
 
-Prerequisites
+### Prerequisites
 
 Docker Desktop: Make sure Docker is installed on your system. If not, you can download it from the [Docker website](https://www.docker.com/products/docker-desktop/).
+
+### Setup
 
 Create a .env in root of project
 
 ```
 OPENAI_API_KEY=<Your OpenAI key>
-REDIS_HOST=<Redis host url>
-REDIS_PASSWORD=<Redis default password>
-REDIS_PORT=<Redis port>
+REDIS_HOST="redis"
+REDIS_PORT="6379"
 ```
 
 Then in terminal run:
