@@ -15,17 +15,33 @@ import { env } from "../util/env.ts";
  * @param modelName - Name of the OpenAI chat model to use.
  * @returns A ChatOpenAI model instance.
  */
-export const initializeModel = (modelName: string): ChatOpenAI => {
-  const temperature = 0.5,
-    maxTokens = 500;
+export const initializeModel = (
+  provider: string,
+  modelName: string,
+  temperature = 0.5,
+): ChatOpenAI => {
+  if (provider === "OpenAI") {
+    const maxTokens = 500;
 
-  return new ChatOpenAI({
-    openAIApiKey: env["OPENAI_API_KEY"],
-    modelName,
-    temperature,
-    maxTokens,
-    streaming: true,
-  });
+    return new ChatOpenAI({
+      openAIApiKey: env["OPENAI_API_KEY"],
+      modelName,
+      temperature,
+      maxTokens,
+      streaming: true,
+    });
+  } else {
+    const maxTokens = 500;
+
+    // Always default to gpt-3.5-turbo
+    return new ChatOpenAI({
+      openAIApiKey: env["OPENAI_API_KEY"],
+      modelName: "gpt-3.5-turbo",
+      temperature,
+      maxTokens,
+      streaming: true,
+    });
+  }
 };
 
 /**

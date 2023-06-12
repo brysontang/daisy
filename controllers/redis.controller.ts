@@ -52,10 +52,35 @@ export const getChatHistory = async (
  * @param roomId: The ID of the room to get the petal from.
  * @returns The petal object.
  */
-export const getPetal = async (roomId: string): Promise<Petal> => {
+export const getPetalData = async (roomId: string): Promise<string | void> => {
   const petal = await redis.get(roomId + ":petal");
   if (petal === null) {
-    throw new Error("Petal not found");
+    return;
   }
-  return JSON.parse(petal);
+  return petal;
+};
+
+/**
+ * Sets the petal for a room.
+ *
+ * Only storing a subset of the data in the petal object.
+ * The only data that is needed to be stored in redis is
+ * the hash to retrieve the full petal object later and the
+ * tasks as they store the user collected data.
+ *
+ * @param roomId: The ID of the room to set the petal for.
+ * @param petal: The petal object to set.
+ *
+ * @returns void
+ */
+export const setPetal = async (
+  roomId: string,
+  petal: Petal,
+): Promise<void> => {
+  const petalData = {
+    hash: petal.getHash(),
+    tasks: petal.getTasks(),
+  };
+
+  await redis.set(roomId + ":petal", JSON.stringify(petalData));
 };

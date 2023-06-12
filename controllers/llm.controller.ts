@@ -8,15 +8,19 @@ import {
   HumanChatMessage,
   SystemChatMessage,
 } from "../util/deps.ts";
-import { getChatHistory, getPetal, storeMessage } from "./redis.controller.ts";
+import { getChatHistory, setPetal, storeMessage } from "./redis.controller.ts";
 import { findPetalTemplate } from "../templates/findPetal.ts";
 import { PetalStore } from "../models/petalStore.model.ts";
+import { PetalFactory } from "../types/petal.ts";
+
 /**
  * Produces stream of AI generated tokens based on the chat history.
  *
  * Takes a human message and returns an AI response, will check for
  * a chat history in Redis and use that to generate the response
- * and store the new messages in Redis.
+ * and finally store the new messages in Redis. This function also
+ * checks if a petal should be picked and sends the petal to the
+ * client.
  *
  * @param socket - The socket object that the message came from.
  * @param message - The message from the user to be added to the history.
@@ -25,10 +29,13 @@ export const humanMessage = async (
   socket: Socket,
   message: string,
 ): Promise<void> => {
+  console.log(`_________Handling human message for ${socket.id}_________`);
+
   // Variable to store the response
   let response = "";
 
   // Check message to see if program should be booted.
+  const petal = await petalCheck(socket, message);
 
   // Create the history input for the model
   const history = await getChatHistory(socket.id);
@@ -36,7 +43,7 @@ export const humanMessage = async (
   history.push(userMessage);
 
   // Initialize the model and get the response
-  const model = initializeModel("gpt-3.5-turbo");
+  const model = initializeModel("OpenAI", "gpt-3.5-turbo");
   const out = await model.call(history, undefined, [
     {
       // Handle the stream of tokens
@@ -63,22 +70,35 @@ export const petalCheck = async (
   socket: Socket,
   message: string,
 ) => {
-  console.log("Checking if petal should be picked");
+  // Check if there is already a petal attached to the room
+  const petal = await PetalFactory.fromRedis(socket.id);
+  if (petal) {
+    // TODO?: Check if the petal should be changed based on the message.
+
+    // This can probably be done by doing the PetalFactory.fromRedis call
+    // and if statement after the message has been checked for petal.
+    // Not even sure if petal should be changed based on message,
+    // but in the future it might be relevant so I'm leaving a hint
+    // for myself here.
+    console.log("Petal already attached to room!", petal.getHash());
+    return petal;
+  }
+
+  console.log("Checking if petal should be picked...");
   // Check message to see if program should be booted.
   const prompt = findPetalTemplate(PetalStore.getPetals());
   const text = await prompt.format({ message });
-  const task = new SystemChatMessage(text);
+  const systemMessage = new SystemChatMessage(text);
 
   const userMessage = new HumanChatMessage(message);
 
   // Honestly, this could probably be
   // const history = await getChatHistory(socket.id);
   // But I'm trying to run this model for as cheap as possible.
-  const history = [task, userMessage];
+  const history = [systemMessage, userMessage];
 
-  console.log(history);
   // Initialize the model and get the response
-  const model = initializeModel("gpt-3.5-turbo");
+  const model = initializeModel("OpenAI", "gpt-3.5-turbo", 0.1);
   const out = await model.call(history, undefined, [
     {
       // Handle the stream of tokens
@@ -87,6 +107,22 @@ export const petalCheck = async (
       },
     },
   ]);
+
+  // Check if the petal should be set
+  if (out.text !== "none") {
+    console.log("Picking petal:", out.text + "!");
+    const petal = PetalStore.getPetalByName(out.text);
+    if (petal) {
+      socket.emit("setPetal", {
+        name: petal.getName(),
+        hash: petal.getHash(),
+      });
+
+      setPetal(socket.id, petal);
+    }
+  } else {
+    console.log("No petal picked!");
+  }
 
   return out;
 };

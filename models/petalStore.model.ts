@@ -14,22 +14,20 @@ export class PetalStore {
    * @param petalDir
    */
   static async loadPetals(petalDir: string) {
-    console.log("Loading petals from " + petalDir);
+    console.log("Loading petals from " + petalDir + "...");
     const petalFiles = await Deno.readDir(petalDir);
 
     if (petalFiles === null) {
-      throw new Error("No petals found");
+      throw new Error(
+        "models/petalStore.model.ts - loadPetals - No petals found",
+      );
     }
-
-    // Create a new petal factory the will create petal objects
-    // asynchronously from the YAML files.
-    const petalFactory = new PetalFactory();
 
     // Loop through each file in the petals directory
     for await (const petalFile of petalFiles) {
       if (petalFile.isFile && petalFile.name.endsWith(".yaml")) {
         // Use the petal factory to create a petal object
-        const petal = await petalFactory.fromYamlFile(
+        const petal = await PetalFactory.fromYamlFile(
           petalDir + "/" + petalFile.name,
         );
 
@@ -38,7 +36,7 @@ export class PetalStore {
       }
     }
 
-    console.log("Loaded " + this.petals.size + " petal(s)");
+    console.log("Loaded " + this.petals.size + " petal(s)!");
   }
 
   /**
@@ -49,6 +47,14 @@ export class PetalStore {
    */
   static getPetal(hash: string) {
     return PetalStore.petals.get(hash);
+  }
+
+  static getPetalByName(name: string) {
+    for (const petal of PetalStore.petals.values()) {
+      if (petal.getName() === name) {
+        return petal;
+      }
+    }
   }
 
   static getPetals() {

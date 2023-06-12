@@ -1,18 +1,18 @@
 import { httpServe, SocketIoServer } from "./util/deps.ts";
-import { humanMessage, petalCheck } from "./controllers/llm.controller.ts";
+
+import { humanMessage } from "./controllers/llm.controller.ts";
 import { PetalStore } from "./models/petalStore.model.ts";
 
-// Create a new Socket.IO server
-const io = new SocketIoServer();
+// Create a new PetalStore
+await PetalStore.loadPetals("./petals");
 
-io.on("connection", (socket) => {
+// Create a new Socket.IO server
+const socketServer = new SocketIoServer();
+
+socketServer.on("connection", (socket) => {
   console.log(`socket ${socket.id} connected`);
-  socket.on("message", async (message) => {
-    // Check to see if the system should enter a petal mode
-    let out = await petalCheck(socket, message);
-    console.log(out);
-    // We pass the socket here because we need to emit the response
-    // back to the client as it's streamed.
+
+  socket.on("message", (message) => {
     humanMessage(socket, message);
   });
 
@@ -21,9 +21,6 @@ io.on("connection", (socket) => {
   });
 });
 
-// Create a new PetalStore
-await PetalStore.loadPetals("./petals");
-
-await httpServe(io.handler(), {
+await httpServe(socketServer.handler(), {
   port: 3000,
 });
