@@ -133,6 +133,7 @@ export class PetalFactory {
     const hash = new Hash("md5").digest(encode(yamlFile)).hex();
 
     // Create tasks
+    // TODO: Abstract this code out because I use it in fromRedis as well
     const tasks: Task[] = [];
     for (const task of yaml.tasks) {
       // Turn the list of objectives into a map
