@@ -91,6 +91,19 @@ export class Petal {
   public getTasks(): Task[] {
     return this.tasks;
   }
+
+  /**
+   * Loops through tasks and returns the first one where .isFinished is false.
+   *
+   * @returns {Task} The current task of the petal.
+   */
+  public getCurrentTask(): Task | void {
+    for (const task of this.tasks) {
+      if (!task.isFinished()) {
+        return task;
+      }
+    }
+  }
 }
 
 /**
@@ -179,7 +192,8 @@ export class PetalFactory {
     for (const task of petalTasks) {
       // Turn the list of objectives into a map
       const objectives: { [key: string]: string | null } = {};
-      for (const objective of task.objectives) {
+      const objectivesArray = Object.keys(JSON.parse(task.objectives));
+      for (const objective of objectivesArray) {
         objectives[objective] = null;
       }
 

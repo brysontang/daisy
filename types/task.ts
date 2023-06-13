@@ -11,6 +11,7 @@ export class Task {
   // and the value being the value of the piece of information. See description
   // on getObjectivesObject for more information about how this is used.
   private objectives: { [key: string]: string | null } = {};
+  private finished: boolean = false;
 
   constructor(
     goal: string,
@@ -28,6 +29,13 @@ export class Task {
    */
   public getGoal(): string {
     return this.goal;
+  }
+
+  /**
+   * @returns {boolean} Whether or not the task is finished.
+   */
+  public isFinished(): boolean {
+    return this.finished;
   }
 
   /**
@@ -51,7 +59,7 @@ export class Task {
     return this.objectives;
   }
 
-  public getRequiredObjectives(): string {
+  public getRequiredObjectives(): string | void {
     // Get objectives that are still null
     const requiredObjectives = Object.keys(this.objectives).filter(
       (key) => this.objectives[key] === null,
@@ -60,7 +68,14 @@ export class Task {
     // Return the objectives as a string with new lines and dashes
     // - Objective 1
     // - Objective 2
-    return requiredObjectives.join("\n- ");
+    if (requiredObjectives.length === 0) {
+      console.log("All objectives have been collected.");
+      return;
+    } else {
+      console.log(`${requiredObjectives.length} objectives left to collect.`);
+      const list = requiredObjectives.join("\n- ");
+      return `- ${list}`;
+    }
   }
 
   /**
@@ -77,6 +92,7 @@ export class Task {
       goal: this.goal,
       controller: this.controller,
       objectives: JSON.stringify(this.objectives),
+      finished: this.finished,
     };
   }
 }

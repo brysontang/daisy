@@ -2,7 +2,10 @@ import { Socket } from "https://deno.land/x/socket_io@0.2.0/mod.ts";
 
 import { initializeModel } from "../models/llm.model.ts";
 
-import { handleToken } from "../services/llm.service.ts";
+import {
+  createObjectiveMessage,
+  handleToken,
+} from "../services/llm.service.ts";
 import {
   AIChatMessage,
   HumanChatMessage,
@@ -11,7 +14,7 @@ import {
 import { getChatHistory, setPetal, storeMessage } from "./redis.controller.ts";
 import { findPetalTemplate } from "../templates/findPetal.ts";
 import { PetalStore } from "../models/petalStore.model.ts";
-import { PetalFactory } from "../types/petal.ts";
+import { Petal, PetalFactory } from "../types/petal.ts";
 
 /**
  * Produces stream of AI generated tokens based on the chat history.
@@ -34,13 +37,25 @@ export const humanMessage = async (
   // Variable to store the response
   let response = "";
 
-  // Check message to see if program should be booted.
-  const petal = await petalCheck(socket, message);
-
   // Create the history input for the model
   const history = await getChatHistory(socket.id);
   const userMessage = new HumanChatMessage(message);
   history.push(userMessage);
+
+  // Check message to see if program should be booted.
+  const petal = await petalCheck(socket, message);
+
+  if (petal) {
+    console.log("--Checking for petal objectives--");
+    // It's ok for objective to be defined in this scope
+    // because we will not add it to the history in
+    // redis. This will save on the number of tokens
+    // for future calls.
+    const objective = await createObjectiveMessage(petal);
+    if (objective) {
+      history.push(objective);
+    }
+  }
 
   // Initialize the model and get the response
   const model = initializeModel("OpenAI", "gpt-3.5-turbo");
@@ -69,7 +84,7 @@ export const humanMessage = async (
 export const petalCheck = async (
   socket: Socket,
   message: string,
-) => {
+): Promise<Petal | void> => {
   // Check if there is already a petal attached to the room
   const petal = await PetalFactory.fromRedis(socket.id);
   if (petal) {
@@ -86,8 +101,11 @@ export const petalCheck = async (
 
   console.log("Checking if petal should be picked...");
   // Check message to see if program should be booted.
-  const prompt = findPetalTemplate(PetalStore.getPetals());
-  const text = await prompt.format({ message });
+  const prompt = findPetalTemplate();
+  const petals = PetalStore.getPetals();
+  const text = await prompt.format({
+    list: petals.map((petal) => `- ${petal.getName()}`).join("\n"),
+  });
   const systemMessage = new SystemChatMessage(text);
 
   const userMessage = new HumanChatMessage(message);
@@ -119,10 +137,10 @@ export const petalCheck = async (
       });
 
       setPetal(socket.id, petal);
+
+      return petal;
     }
   } else {
     console.log("No petal picked!");
   }
-
-  return out;
 };

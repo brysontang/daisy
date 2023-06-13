@@ -1,10 +1,13 @@
+import { collectDataTemplate } from "../templates/collectData.ts";
+import { Petal } from "../types/petal.ts";
+import { BaseChatMessage, SystemChatMessage } from "../util/deps.ts";
+
 /**
  * Checks if a token is punctuation.
  *
  * @param token {string} The token from the model to check.
  * @returns {boolean} Whether the token is punctuation or not.
  */
-
 export const isPunctuation = (token: string): boolean => {
   return token === "." || token === "!" || token === "?" || token === ",";
 };
@@ -63,6 +66,47 @@ export const handleToken = (partialResponse: string, token: string): string => {
   }
 
   return text;
+};
+
+/**
+ * Create a system message that details the information that is needed from the user.
+ *
+ * This function checks the petal to see if there are any missing objectives in the
+ * current task. If there are, it creates a system message that details the information
+ * that is needed from the user.
+ *
+ * @param petal {Petal} The petal to check for missing objectives.
+ * @returns {Promise<SystemChatMessage | void>} The system message that details the information
+ */
+export const createObjectiveMessage = async (
+  petal: Petal,
+): Promise<SystemChatMessage | void> => {
+  console.log(
+    `Checking if petal ${petal.getName()} has any missing objectives`,
+  );
+  if (!petal) return;
+
+  const currentTask = petal.getCurrentTask();
+  if (!currentTask) {
+    console.log(
+      `Petal has no current task, the petal will be removed from Redis`,
+    );
+    // TODO: Remove petal from Redis
+
+    return;
+  }
+
+  const prompt = collectDataTemplate();
+  const objectives = currentTask.getRequiredObjectives();
+  if (!objectives) return;
+
+  const text = await prompt.format({
+    botName: petal.getName(),
+    goal: currentTask.getGoal(),
+    objectives,
+  });
+
+  return new SystemChatMessage(text);
 };
 
 // Used to mock functions in tests
