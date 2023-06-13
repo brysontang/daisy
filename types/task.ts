@@ -11,7 +11,7 @@ export class Task {
   // and the value being the value of the piece of information. See description
   // on getObjectivesObject for more information about how this is used.
   private objectives: { [key: string]: string | null } = {};
-  private finished: boolean = false;
+  private finished = false;
 
   constructor(
     goal: string,

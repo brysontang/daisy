@@ -1,6 +1,6 @@
 import { collectDataTemplate } from "../templates/collectData.ts";
 import { Petal } from "../types/petal.ts";
-import { BaseChatMessage, SystemChatMessage } from "../util/deps.ts";
+import { SystemChatMessage } from "../util/deps.ts";
 
 /**
  * Checks if a token is punctuation.
