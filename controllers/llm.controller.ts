@@ -3,7 +3,7 @@ import { Socket } from "https://deno.land/x/socket_io@0.2.0/mod.ts";
 import { initializeModel } from "../models/llm.model.ts";
 
 import {
-  createObjectiveMessage,
+  generateObjectivesMessage,
   handleToken,
 } from "../services/llm.service.ts";
 import {
@@ -47,13 +47,13 @@ export const humanMessage = async (
 
   if (petal) {
     console.log("--Checking for petal objectives--");
-    // It's ok for objective to be defined in this scope
-    // because we will not add it to the history in
-    // redis. This will save on the number of tokens
-    // for future calls.
-    const objective = await createObjectiveMessage(petal);
-    if (objective) {
-      history.push(objective);
+    // It's ok for objective to only be defined in
+    // this scope because we will not add it to the
+    // history in redis. This will save on the number
+    // of tokens for future calls.
+    const objectiveMessage = await generateObjectivesMessage(petal);
+    if (objectiveMessage) {
+      history.push(objectiveMessage);
     }
   }
 

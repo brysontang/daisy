@@ -78,7 +78,7 @@ export const handleToken = (partialResponse: string, token: string): string => {
  * @param petal {Petal} The petal to check for missing objectives.
  * @returns {Promise<SystemChatMessage | void>} The system message that details the information
  */
-export const createObjectiveMessage = async (
+export const generateObjectivesMessage = async (
   petal: Petal,
 ): Promise<SystemChatMessage | void> => {
   console.log(
