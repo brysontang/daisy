@@ -22,8 +22,8 @@ import { PetalFactory } from "../types/petal.ts";
  * checks if a petal should be picked and sends the petal to the
  * client.
  *
- * @param socket - The socket object that the message came from.
- * @param message - The message from the user to be added to the history.
+ * @param socket {Socket} The socket object that the message came from.
+ * @param message {string} The message from the user to be added to the history.
  */
 export const humanMessage = async (
   socket: Socket,
@@ -63,8 +63,8 @@ export const humanMessage = async (
 };
 
 /**
- * @param socket - The socket object to send the new petal to.
- * @param message - The message from the user to check if a petal should be picked.
+ * @param socket {Socket} The socket object to send the new petal to.
+ * @param message {string} The message from the user to check if a petal should be picked.
  */
 export const petalCheck = async (
   socket: Socket,

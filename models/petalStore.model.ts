@@ -11,7 +11,7 @@ export class PetalStore {
    * This is useful because we only need one instance of the PetalStore class. So
    * the files only need to be loaded once.
    *
-   * @param petalDir
+   * @param petalDir {string} The directory to load the petals from.
    */
   static async loadPetals(petalDir: string) {
     console.log("Loading petals from " + petalDir + "...");
@@ -42,14 +42,20 @@ export class PetalStore {
   /**
    * Returns a petal object from the hash.
    *
-   * @param hash - The hash of the petal to get.
-   * @returns The petal object.
+   * @param hash {string} The hash of the petal to get.
+   * @returns {Petal | void} The petal object.
    */
-  static getPetal(hash: string) {
+  static getPetal(hash: string): Petal | void {
     return PetalStore.petals.get(hash);
   }
 
-  static getPetalByName(name: string) {
+  /**
+   * Gets the petal object from the name.
+   *
+   * @param name Name of the petal to get
+   * @returns {Petal | void} The petal object.
+   */
+  static getPetalByName(name: string): Petal | void {
     for (const petal of PetalStore.petals.values()) {
       if (petal.getName() === name) {
         return petal;
@@ -57,7 +63,12 @@ export class PetalStore {
     }
   }
 
-  static getPetals() {
+  /**
+   * Returns an array of all the petals.
+   *
+   * @returns {Petal[]} An array of all the petals.
+   */
+  static getPetals(): Petal[] {
     // Return an array of the petal objects
     return Array.from(PetalStore.petals.values());
   }

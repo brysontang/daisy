@@ -24,7 +24,7 @@ export class Task {
   }
 
   /**
-   * @returns Get the goal of the task.
+   * @returns {string} Get the goal of the task.
    */
   public getGoal(): string {
     return this.goal;
@@ -33,7 +33,7 @@ export class Task {
   /**
    * Returns objective's key pair values collected by daisy.
    *
-   * @returns An object with the keys of the objective and the values.
+   * @returns {{ [key: string]: string | null }} An object with the keys of the objective and the values.
    *
    * @example
    * Suppose that the goal of the task is to collect information about the user,

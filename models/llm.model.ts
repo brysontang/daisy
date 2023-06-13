@@ -12,8 +12,8 @@ import { env } from "../util/env.ts";
 /**
  * Create a ChatOpenAI model.
  *
- * @param modelName - Name of the OpenAI chat model to use.
- * @returns A ChatOpenAI model instance.
+ * @param modelName {string} Name of the OpenAI chat model to use.
+ * @returns {ChatOpenAI} A ChatOpenAI model instance.
  */
 export const initializeModel = (
   provider: string,
@@ -58,8 +58,8 @@ export const initializeModel = (
  *
  * This function takes a StoredMessage type and returns a BaseChatMessage type.
  *
- * @param sm - Raw stored message object.
- * @returns A BaseChatMessage type.
+ * @param sm {StoredMessage} Raw stored message object.
+ * @returns {BaseChatMessage} A BaseChatMessage type.
  */
 export const typeFromObject = (sm: StoredMessage): BaseChatMessage => {
   const type = sm.type;

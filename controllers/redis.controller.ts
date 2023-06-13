@@ -6,8 +6,8 @@ import { BaseChatMessage, StoredMessage } from "../util/deps.ts";
 /**
  * Takes a StoredMessage object, turns it into a string, and stores it in Redis.
  *
- * @param roomId - The ID of the room to store the message in, this is the redis key.
- * @param message - The message to store in Redis.
+ * @param roomId {string} The ID of the room to store the message in, this is the redis key.
+ * @param message {string} The message to store in Redis.
  */
 export const storeMessage = async (
   roomId: string,
@@ -23,8 +23,8 @@ export const storeMessage = async (
  * and turns it into a BaseChatMessage type, this is so it can be used by
  * the LLM model.
  *
- * @param roomId - The ID of the room to get the chat history from.
- * @returns The chat history in LangChain message format.
+ * @param roomId {string} The ID of the room to get the chat history from.
+ * @returns {Promise<BaseChatMessage[]>} The chat history in LangChain message format.
  */
 export const getChatHistory = async (
   roomId: string,
@@ -49,8 +49,8 @@ export const getChatHistory = async (
  * that the AI is in. It is a way to change the AI's
  * function for the user.
  *
- * @param roomId: The ID of the room to get the petal from.
- * @returns The petal object.
+ * @param roomId {string} The ID of the room to get the petal from.
+ * @returns {Promise<string | void>} The petal object as a string.
  */
 export const getPetalData = async (roomId: string): Promise<string | void> => {
   const petal = await redis.get(roomId + ":petal");
@@ -68,10 +68,10 @@ export const getPetalData = async (roomId: string): Promise<string | void> => {
  * the hash to retrieve the full petal object later and the
  * tasks as they store the user collected data.
  *
- * @param roomId: The ID of the room to set the petal for.
- * @param petal: The petal object to set.
+ * @param roomId {string} The ID of the room to set the petal for.
+ * @param petal {Petal} The petal object to set.
  *
- * @returns void
+ * @returns {Promise<void>}
  */
 export const setPetal = async (
   roomId: string,

@@ -51,42 +51,42 @@ export class Petal {
   }
 
   /**
-   * @returns The hash of the petal.
+   * @returns {string} The hash of the petal.
    */
   public getHash(): string {
     return this.hash;
   }
 
   /**
-   * @returns The name of the petal.
+   * @returns {string} The name of the petal.
    */
   public getName(): string {
     return this.name;
   }
 
   /**
-   * @returns The file name of the petal.
+   * @returns {string} The file name of the petal.
    */
   public getFileName(): string {
     return this.fileName;
   }
 
   /**
-   * @returns The model provider of the petal.
+   * @returns {string} The model provider of the petal.
    */
   public getModelProvider(): string {
     return this.modelProvider;
   }
 
   /**
-   * @returns The model name of the petal.
+   * @returns {string} The model name of the petal.
    */
   public getModelName(): string {
     return this.modelName;
   }
 
   /**
-   * @returns The tasks of the petal.
+   * @returns {Task[]} The tasks of the petal.
    */
   public getTasks(): Task[] {
     return this.tasks;
@@ -111,8 +111,8 @@ export class PetalFactory {
    * The YAML file is hashed and the hash is stored in the Petal object
    * as the unique identifier for each petal.
    *
-   * @param fileName
-   * @returns
+   * @param fileName {string} The name of the YAML file.
+   * @returns {Promise<Petal>} A Petal object from a YAML file definition.
    */
   public static async fromYamlFile(fileName: string): Promise<Petal> {
     // Get the YAML file data
@@ -159,8 +159,8 @@ export class PetalFactory {
    * In redis only the hash and the tasks are stored. This method will
    * get the full petal object from the PetalStore and return it.
    *
-   * @param sessionId The Socket.IO session ID
-   * @returns A Petal object from Redis.
+   * @param sessionId {string} The Socket.IO session ID
+   * @returns {Promise<Petal | void>} A Petal object from Redis.
    */
   public static async fromRedis(sessionId: string): Promise<Petal | void> {
     const petal = await getPetalData(sessionId);
@@ -211,7 +211,7 @@ export class PetalFactory {
   /**
    * Creates an empty petal object.
    *
-   * @returns An empty petal object.
+   * @returns {Petal} An empty petal object.
    */
   public static emptyPetal(): Petal {
     return new Petal("", "", "", []);
