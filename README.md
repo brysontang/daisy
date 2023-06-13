@@ -1,4 +1,4 @@
-![Daisy](https://github.com/Bryt12/daisy/assets/8965979/d69aa179-f1d4-4045-8252-76ecda479924)
+![Daisy](https://github.com/Bryt12/daisy/assets/8965979/5d2f3ae1-d779-4fee-bd5d-efd1ccc9a1b2)
 
 [![deno](https://img.shields.io/badge/deno-1.34.0-blue.svg?style=for-the-badge)](https://deno.land/)
 [![langchain](https://img.shields.io/badge/🦜️🔗-0.0.86-blue.svg?style=for-the-badge)](https://github.com/hwchase17/langchainjs)
