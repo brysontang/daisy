@@ -7,7 +7,7 @@
 
 # Daisy
 
-Daily Automation In Simple Yaml
+Data Assimilation In Simple Yaml
 
 ## Description
 
