@@ -200,7 +200,7 @@ export const checkForData = async (
   let data;
   try {
     data = JSON.parse(out.text);
-  } catch (err) {
+  } catch (_err) {
     console.log("Error parsing JSON from checkForData out");
   }
 
