@@ -1,4 +1,5 @@
 import { collectDataTemplate } from "../templates/collectData.ts";
+import { findObjectivesTemplate } from "../templates/findObjectives.ts";
 import { Petal } from "../types/petal.ts";
 import { SystemChatMessage } from "../util/deps.ts";
 
@@ -69,7 +70,37 @@ export const handleToken = (partialResponse: string, token: string): string => {
 };
 
 /**
- * Create a system message that details the information that is needed from the user.
+ * Creates a system message that retreives data from user message.
+ *
+ * This function checks the petal to see if there are any missing objectives in the
+ * current task. If there are, it creates a system message that details the information
+ * that is needed from the user.
+ *
+ * @param petal {Petal} The petal to check for data.
+ * @param message {string} The message to check for data.
+ *
+ * @returns {boolean} Whether the user provided data or not.
+ */
+export const generateCheckForDataMessage = async (
+  petal: Petal,
+): Promise<SystemChatMessage | void> => {
+  const objectives = petal.getCurrentTask()?.getRequiredObjectives();
+
+  if (!objectives) {
+    console.log("No objectives found, can't check for data");
+  }
+
+  const prompt = findObjectivesTemplate();
+
+  const text = await prompt.format({
+    list: objectives,
+  });
+
+  return new SystemChatMessage(text);
+};
+
+/**
+ * Creates a system message that details the information that is needed from the user.
  *
  * This function checks the petal to see if there are any missing objectives in the
  * current task. If there are, it creates a system message that details the information
@@ -91,8 +122,6 @@ export const generateObjectivesMessage = async (
     console.log(
       `Petal has no current task, the petal will be removed from Redis`,
     );
-    // TODO: Remove petal from Redis
-
     return;
   }
 

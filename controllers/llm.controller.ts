@@ -3,6 +3,7 @@ import { Socket } from "https://deno.land/x/socket_io@0.2.0/mod.ts";
 import { initializeModel } from "../models/llm.model.ts";
 
 import {
+  generateCheckForDataMessage,
   generateObjectivesMessage,
   handleToken,
 } from "../services/llm.service.ts";
@@ -11,7 +12,12 @@ import {
   HumanChatMessage,
   SystemChatMessage,
 } from "../util/deps.ts";
-import { getChatHistory, setPetal, storeMessage } from "./redis.controller.ts";
+import {
+  getChatHistory,
+  removePetal,
+  setPetal,
+  storeMessage,
+} from "./redis.controller.ts";
 import { findPetalTemplate } from "../templates/findPetal.ts";
 import { PetalStore } from "../models/petalStore.model.ts";
 import { Petal, PetalFactory } from "../types/petal.ts";
@@ -46,14 +52,24 @@ export const humanMessage = async (
   const petal = await petalCheck(socket, message);
 
   if (petal) {
+    // Check the message for petal objectives.
+    const foundData = await checkForData(petal, message);
+
+    if (foundData) {
+      await setPetal(socket.id, petal);
+    }
+
     console.log("--Checking for petal objectives--");
     // It's ok for objective to only be defined in
     // this scope because we will not add it to the
     // history in redis. This will save on the number
     // of tokens for future calls.
     const objectiveMessage = await generateObjectivesMessage(petal);
+
     if (objectiveMessage) {
       history.push(objectiveMessage);
+    } else {
+      await removePetal(socket.id);
     }
   }
 
@@ -136,11 +152,80 @@ export const petalCheck = async (
         hash: petal.getHash(),
       });
 
-      setPetal(socket.id, petal);
+      await setPetal(socket.id, petal);
 
       return petal;
     }
   } else {
     console.log("No petal picked!");
   }
+};
+
+/**
+ * Collects any data the user may have provided in their message
+ *
+ * This function takes the petals objectives and checks the message for any data
+ * the user may have provided. If the user has provided data, the function updates
+ * the petal's objectives with the data and returns true. If the user has not provided
+ * data, the function returns false.
+ *
+ * @param petal {Petal} The petal to check for data.
+ * @param message {string} The message to check for data.
+ *
+ * @returns {boolean} True if the user provided data, false if not.
+ */
+
+export const checkForData = async (
+  petal: Petal,
+  message: string,
+): Promise<boolean> => {
+  console.log("--Checking for data--");
+  const systemMessage = await generateCheckForDataMessage(petal);
+  if (!systemMessage) {
+    return false;
+  }
+
+  const userMessage = new HumanChatMessage(message);
+
+  // Honestly, this could probably be
+  // const history = await getChatHistory(socket.id);
+  // But I'm trying to run this model for as cheap as possible.
+  const history = [systemMessage, userMessage];
+
+  // Initialize the model and get the response
+  const model = initializeModel("OpenAI", "gpt-3.5-turbo", 0.1);
+  const out = await model.call(history);
+  console.log("checkForData out:");
+
+  let data;
+  try {
+    data = JSON.parse(out.text);
+  } catch (err) {
+    console.log("Error parsing JSON from checkForData out");
+  }
+
+  if (data) {
+    console.log("Data provided!");
+    console.log(data);
+
+    // Update the petal's objectives
+    const keys = Object.keys(data);
+    for (const key of keys) {
+      try {
+        if (data[key] === "N/A" || data[key].toLowerCase() === "unknown") {
+          continue;
+        }
+
+        petal.updateObjective(key, data[key]);
+      } catch (err) {
+        console.log('Error updating petal objective: "' + key + '"' + err);
+
+        petal.addAdditionalObejctive(key, data[key]);
+      }
+    }
+  } else {
+    console.log("No data provided!");
+  }
+
+  return true;
 };

@@ -104,6 +104,43 @@ export class Petal {
       }
     }
   }
+
+  /**
+   * Updates the objective of the current task.
+   *
+   * @param objective {string} The objective to update.
+   * @param value {string} The value to update the objective to.
+   */
+  public updateObjective(objective: string, value: string): void {
+    const currentTask = this.getCurrentTask();
+
+    console.log(currentTask?.getRequiredObjectives());
+
+    if (currentTask === undefined) {
+      throw new Error(
+        "types/petal.ts - updateObjective - current task is undefined",
+      );
+    }
+
+    currentTask.updateObjective(objective, value);
+  }
+
+  /**
+   * If the chatbot collects any additional data it thinks is relevant it gets send here.
+   *
+   * @param objective {string} The objective to add additional data to.
+   */
+  public addAdditionalObejctive(objective: string, value: string): void {
+    const currentTask = this.getCurrentTask();
+
+    if (currentTask === undefined) {
+      throw new Error(
+        "types/petal.ts - addAdditionalObjective - current task is undefined",
+      );
+    }
+
+    currentTask.addAdditionalObjective(objective, value);
+  }
 }
 
 /**
@@ -190,12 +227,9 @@ export class PetalFactory {
     // Create tasks
     const tasks: Task[] = [];
     for (const task of petalTasks) {
+      console.log(task);
       // Turn the list of objectives into a map
-      const objectives: { [key: string]: string | null } = {};
-      const objectivesArray = Object.keys(JSON.parse(task.objectives));
-      for (const objective of objectivesArray) {
-        objectives[objective] = null;
-      }
+      const objectives = JSON.parse(task.objectives);
 
       // Create the task
       tasks.push(new Task(task.goal, task.controller, objectives));

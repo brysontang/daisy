@@ -84,3 +84,12 @@ export const setPetal = async (
 
   await redis.set(roomId + ":petal", JSON.stringify(petalData));
 };
+
+/**
+ * Remove petal from chat once it is completed.
+ *
+ * @param roomId {string} The ID of the room to remove the petal from.
+ */
+export const removePetal = async (roomId: string): Promise<void> => {
+  await redis.del(roomId + ":petal");
+};

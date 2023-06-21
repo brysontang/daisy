@@ -59,6 +59,33 @@ export class Task {
     return this.objectives;
   }
 
+  /**
+   * Updates the objective of the current task.
+   *
+   * @param objective {string} The objective to update.
+   * @param value {string} The value to update the objective to.
+   */
+  public updateObjective(objective: string, value: string): void {
+    if (this.objectives[objective] === undefined) {
+      throw new Error(
+        `types/task.ts - updateObjective - objective ${objective} does not exist`,
+      );
+    }
+
+    this.objectives[objective] = value;
+  }
+
+  /**
+   * Adds additional data to the objective.
+   *
+   * @returns {void}
+   */
+  public addAdditionalObjective(objective: string, value: string): void {
+    // Need to add key value to "additional" key in objectives object.
+    console.log(`Adding additional objective ${objective} with value ${value}`);
+    this.objectives[`additional_${objective}`] = value;
+  }
+
   public getRequiredObjectives(): string | void {
     // Get objectives that are still null
     const requiredObjectives = Object.keys(this.objectives).filter(
